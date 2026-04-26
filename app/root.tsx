@@ -7,6 +7,7 @@ import {
   ScrollRestoration,
 } from "react-router";
 import { ShopifyProvider, CartProvider } from "@shopify/hydrogen-react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import type { Route } from "./+types/root";
 import "./app.css";
 
@@ -52,6 +53,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </ShopifyProvider>
         <ScrollRestoration />
         <Scripts />
+        <SpeedInsights />
       </body>
     </html>
   );

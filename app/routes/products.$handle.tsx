@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { useCart } from "@shopify/hydrogen-react";
+import { useCart } from "../lib/cart";
 import type { Route } from "./+types/products.$handle";
 import { SiteLayout } from "../components/Layout";
 import { MOCK_PRODUCT_DETAIL, MOCK_PRODUCTS } from "../lib/mockData";
@@ -55,7 +55,7 @@ export default function ProductPage({ loaderData }: Route.ComponentProps) {
   const { product } = loaderData as any;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { linesAdd } = useCart();
+  const { addItem } = useCart();
   const [activeImage, setActiveImage] = useState(0);
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
@@ -79,16 +79,20 @@ export default function ProductPage({ loaderData }: Route.ComponentProps) {
     navigate(`?${params.toString()}`, { replace: true });
   }
 
-  async function handleAddToCart() {
-    if (!selectedVariant?.id || !selectedVariant?.availableForSale) return;
+  function handleAddToCart() {
+    if (!selectedVariant?.availableForSale) return;
     setAdding(true);
-    try {
-      await linesAdd([{ merchandiseId: selectedVariant.id, quantity: 1 }]);
-      setAdded(true);
-      setTimeout(() => setAdded(false), 2000);
-    } finally {
-      setAdding(false);
-    }
+    addItem({
+      id: product.id,
+      variantId: selectedVariant.id ?? product.id,
+      title: product.title,
+      price: selectedVariant.price?.amount ?? "0",
+      currency: selectedVariant.price?.currencyCode ?? "USD",
+      image: (product.images?.nodes?.[0] ?? product.featuredImage)?.url,
+      size: selectedOptions["Size"],
+    });
+    setAdded(true);
+    setTimeout(() => { setAdded(false); setAdding(false); }, 2000);
   }
 
   const images = product.images?.nodes ?? [];

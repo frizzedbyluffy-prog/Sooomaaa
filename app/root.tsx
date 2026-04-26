@@ -6,9 +6,8 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import { ShopifyProvider, CartProvider } from "@shopify/hydrogen-react";
-import { useState, useEffect, type ReactNode } from "react";
 import type { Route } from "./+types/root";
+import { CartProvider } from "./lib/cart";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -24,32 +23,7 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-// Only rendered client-side to avoid SSR issues with ShopifyProvider
-function ShopifyProviders({ children }: { children: ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
-  const storeDomain =
-    import.meta.env.VITE_STORE_DOMAIN ?? "demo.myshopify.com";
-  const storefrontToken =
-    import.meta.env.VITE_STOREFRONT_API_TOKEN ?? "mock-token";
-
-  if (!mounted) return <>{children}</>;
-
-  return (
-    <ShopifyProvider
-      storeDomain={storeDomain}
-      storefrontToken={storefrontToken}
-      storefrontApiVersion="2025-01"
-      countryIsoCode="US"
-      languageIsoCode="EN"
-    >
-      <CartProvider>{children}</CartProvider>
-    </ShopifyProvider>
-  );
-}
-
-export function Layout({ children }: { children: ReactNode }) {
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -59,7 +33,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <Links />
       </head>
       <body className="bg-[#0a0a0a] text-white font-body">
-        <ShopifyProviders>{children}</ShopifyProviders>
+        <CartProvider>{children}</CartProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

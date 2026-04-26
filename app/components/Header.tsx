@@ -1,21 +1,12 @@
 import { Link, NavLink } from "react-router";
-import { useCart } from "@shopify/hydrogen-react";
+import { useCart } from "../lib/cart";
 
 interface HeaderProps {
   onCartClick: () => void;
 }
 
-function CartCount() {
-  const { totalQuantity } = useCart();
-  if (!totalQuantity) return null;
-  return (
-    <span className="absolute -top-2 -right-2 bg-[#ff0000] text-white text-xs font-bold w-5 h-5 flex items-center justify-center border-2 border-[#0a0a0a] font-jp">
-      {totalQuantity}
-    </span>
-  );
-}
-
 export function Header({ onCartClick }: HeaderProps) {
+  const { totalQuantity } = useCart();
 
   return (
     <header className="sticky top-0 z-50 bg-[#0a0a0a] border-b-2 border-white">
@@ -36,9 +27,9 @@ export function Header({ onCartClick }: HeaderProps) {
         {/* Nav */}
         <nav className="hidden md:flex gap-8 items-center">
           {[
-            { to: "/collections/all", label: "SHOP", jp: "ショップ" },
-            { to: "/collections/new-arrivals", label: "NEW DROPS", jp: "新着" },
-            { to: "/about", label: "ABOUT", jp: "について" },
+            { to: "/collections/all", label: "SHOP" },
+            { to: "/collections/new-arrivals", label: "NEW DROPS" },
+            { to: "/about", label: "ABOUT" },
           ].map(({ to, label }) => (
             <NavLink
               key={to}
@@ -62,7 +53,11 @@ export function Header({ onCartClick }: HeaderProps) {
           className="relative font-body text-sm font-bold uppercase tracking-widest border-2 border-white px-4 py-2 hover:bg-[#ff0000] hover:border-[#ff0000] transition-all duration-75"
         >
           カート
-          <CartCount />
+          {totalQuantity > 0 && (
+            <span className="absolute -top-2 -right-2 bg-[#ff0000] text-white text-xs font-bold w-5 h-5 flex items-center justify-center border-2 border-[#0a0a0a] font-jp">
+              {totalQuantity}
+            </span>
+          )}
         </button>
       </div>
     </header>

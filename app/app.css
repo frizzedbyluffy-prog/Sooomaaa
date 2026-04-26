@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand colors */
+  --color-brand-black: #0a0a0a;
+  --color-brand-white: #ffffff;
+  --color-blood-red: #ff0000;
+  --color-acid: #ffff00;
+
+  /* Font families */
+  --font-display: "Anton", sans-serif;
+  --font-body: "Space Grotesk", sans-serif;
+  --font-jp: "Noto Sans JP", sans-serif;
+
+  /* Zero border radius everywhere */
+  --radius-none: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-DEFAULT: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-full: 0;
+}
+
+/* Base reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  border-radius: 0 !important;
+}
+
+html, body {
+  background-color: #0a0a0a;
+  color: #ffffff;
+  font-family: "Space Grotesk", sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Marquee ───────────────────────────────────── */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 22s linear infinite;
+  white-space: nowrap;
+  display: flex;
+  width: max-content;
+}
+
+/* ── Glitch (red / cyan channels) ─────────────── */
+.glitch {
+  position: relative;
+}
+
+.glitch:hover::before,
+.glitch:hover::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.glitch:hover::before {
+  color: #ff0000;
+  text-shadow: 2px 0 #ff0000;
+  clip-path: polygon(0 15%, 100% 15%, 100% 40%, 0 40%);
+  animation: glitch-red 0.35s infinite steps(1);
+}
+
+.glitch:hover::after {
+  color: #00ffff;
+  text-shadow: -2px 0 #00ffff;
+  clip-path: polygon(0 60%, 100% 60%, 100% 85%, 0 85%);
+  animation: glitch-cyan 0.35s infinite steps(1);
+}
+
+@keyframes glitch-red {
+  0%   { clip-path: polygon(0 2%, 100% 2%, 100% 28%, 0 28%);   transform: translate(-2px, 0); }
+  25%  { clip-path: polygon(0 50%, 100% 50%, 100% 70%, 0 70%); transform: translate(2px, 0); }
+  50%  { clip-path: polygon(0 15%, 100% 15%, 100% 38%, 0 38%); transform: translate(-1px, 1px); }
+  75%  { clip-path: polygon(0 75%, 100% 75%, 100% 90%, 0 90%); transform: translate(1px, -1px); }
+  100% { clip-path: polygon(0 5%, 100% 5%, 100% 22%, 0 22%);   transform: translate(0, 0); }
+}
+
+@keyframes glitch-cyan {
+  0%   { clip-path: polygon(0 58%, 100% 58%, 100% 80%, 0 80%); transform: translate(2px, 0); }
+  25%  { clip-path: polygon(0 30%, 100% 30%, 100% 48%, 0 48%); transform: translate(-2px, 0); }
+  50%  { clip-path: polygon(0 65%, 100% 65%, 100% 88%, 0 88%); transform: translate(1px, -1px); }
+  75%  { clip-path: polygon(0 10%, 100% 10%, 100% 28%, 0 28%); transform: translate(-1px, 1px); }
+  100% { clip-path: polygon(0 55%, 100% 55%, 100% 78%, 0 78%); transform: translate(0, 0); }
+}
+
+/* ── Scanline overlay ─────────────────────────── */
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 0, 0, 0.04) 2px,
+    rgba(255, 0, 0, 0.04) 4px
+  );
+  z-index: 1;
+}
+
+/* ── Manga panel border flash ──────────────────── */
+.panel-hover {
+  transition: border-color 0.06s ease;
+}
+
+.panel-hover:hover {
+  border-color: #ff0000 !important;
+}
+
+/* ── Border-flash to acid ──────────────────────── */
+.acid-hover {
+  transition: border-color 0.06s ease, color 0.06s ease;
+}
+
+.acid-hover:hover {
+  border-color: #ffff00 !important;
+  color: #ffff00 !important;
+}

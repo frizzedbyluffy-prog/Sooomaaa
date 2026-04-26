@@ -1,132 +1,205 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand colors */
   --color-brand-black: #0a0a0a;
   --color-brand-white: #ffffff;
   --color-blood-red: #ff0000;
   --color-acid: #ffff00;
 
-  /* Font families */
   --font-display: "Anton", sans-serif;
   --font-body: "Space Grotesk", sans-serif;
   --font-jp: "Noto Sans JP", sans-serif;
-
-  /* Zero border radius everywhere */
-  --radius-none: 0;
-  --radius-sm: 0;
-  --radius-md: 0;
-  --radius-DEFAULT: 0;
-  --radius-lg: 0;
-  --radius-xl: 0;
-  --radius-2xl: 0;
-  --radius-3xl: 0;
-  --radius-full: 0;
 }
 
-/* Base reset */
 *, *::before, *::after {
   box-sizing: border-box;
   border-radius: 0 !important;
 }
 
-html, body {
+html { scroll-behavior: smooth; }
+
+body {
   background-color: #0a0a0a;
-  color: #ffffff;
+  color: #fff;
   font-family: "Space Grotesk", sans-serif;
   overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── Custom cursor ─────────────────────────────── */
+#cursor {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  background: #ff0000;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.15s, height 0.15s, background 0.15s;
+  mix-blend-mode: difference;
+}
+#cursor-ring {
+  position: fixed;
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(255,0,0,0.6);
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: all 0.08s ease;
+}
+body:has(a:hover) #cursor,
+body:has(button:hover) #cursor { width: 28px; height: 28px; background: #ffff00; }
+body:has(a:hover) #cursor-ring,
+body:has(button:hover) #cursor-ring { width: 0; height: 0; opacity: 0; }
+
+/* ── Noise overlay ─────────────────────────────── */
+.noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.35;
+}
+
+/* ── Scanlines ─────────────────────────────────── */
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255,0,0,0.03) 2px,
+    rgba(255,0,0,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 3;
+  animation: scanmove 8s linear infinite;
+}
+@keyframes scanmove {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 100vh; }
+}
+
+/* ── Video hero bg fallback ────────────────────── */
+.hero-bg {
+  background: radial-gradient(ellipse at 20% 50%, #1a0000 0%, #0a0a0a 60%),
+              radial-gradient(ellipse at 80% 20%, #0d0005 0%, transparent 60%);
+  animation: heropulse 6s ease-in-out infinite alternate;
+}
+@keyframes heropulse {
+  0%   { filter: brightness(1); }
+  100% { filter: brightness(1.08); }
 }
 
 /* ── Marquee ───────────────────────────────────── */
-@keyframes marquee {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 .animate-marquee {
-  animation: marquee 22s linear infinite;
+  animation: marquee 20s linear infinite;
   white-space: nowrap;
   display: flex;
   width: max-content;
 }
 
-/* ── Glitch (red / cyan channels) ─────────────── */
-.glitch {
-  position: relative;
+/* ── Letter-by-letter reveal ──────────────────── */
+@keyframes letterIn {
+  0%   { opacity: 0; transform: translateY(100%) skewY(8deg); }
+  100% { opacity: 1; transform: translateY(0) skewY(0deg); }
+}
+.letter {
+  display: inline-block;
+  overflow: hidden;
+}
+.letter span {
+  display: inline-block;
+  animation: letterIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
 }
 
-.glitch:hover::before,
-.glitch:hover::after {
+/* ── Glitch (red/cyan) ─────────────────────────── */
+.glitch { position: relative; }
+.glitch:hover::before, .glitch:hover::after {
   content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
   pointer-events: none;
 }
-
 .glitch:hover::before {
   color: #ff0000;
-  text-shadow: 2px 0 #ff0000;
-  clip-path: polygon(0 15%, 100% 15%, 100% 40%, 0 40%);
-  animation: glitch-red 0.35s infinite steps(1);
+  animation: glitch-red 0.3s infinite steps(1);
 }
-
 .glitch:hover::after {
   color: #00ffff;
-  text-shadow: -2px 0 #00ffff;
-  clip-path: polygon(0 60%, 100% 60%, 100% 85%, 0 85%);
-  animation: glitch-cyan 0.35s infinite steps(1);
+  animation: glitch-cyan 0.3s infinite steps(1);
 }
-
 @keyframes glitch-red {
-  0%   { clip-path: polygon(0 2%, 100% 2%, 100% 28%, 0 28%);   transform: translate(-2px, 0); }
-  25%  { clip-path: polygon(0 50%, 100% 50%, 100% 70%, 0 70%); transform: translate(2px, 0); }
-  50%  { clip-path: polygon(0 15%, 100% 15%, 100% 38%, 0 38%); transform: translate(-1px, 1px); }
-  75%  { clip-path: polygon(0 75%, 100% 75%, 100% 90%, 0 90%); transform: translate(1px, -1px); }
-  100% { clip-path: polygon(0 5%, 100% 5%, 100% 22%, 0 22%);   transform: translate(0, 0); }
+  0%   { clip-path: polygon(0 2%,  100% 2%,  100% 28%, 0 28%); transform: translate(-2px, 0); }
+  33%  { clip-path: polygon(0 50%, 100% 50%, 100% 70%, 0 70%); transform: translate(2px, 0); }
+  66%  { clip-path: polygon(0 15%, 100% 15%, 100% 38%, 0 38%); transform: translate(-1px, 1px); }
+  100% { clip-path: polygon(0 75%, 100% 75%, 100% 90%, 0 90%); transform: translate(1px, 0); }
 }
-
 @keyframes glitch-cyan {
   0%   { clip-path: polygon(0 58%, 100% 58%, 100% 80%, 0 80%); transform: translate(2px, 0); }
-  25%  { clip-path: polygon(0 30%, 100% 30%, 100% 48%, 0 48%); transform: translate(-2px, 0); }
-  50%  { clip-path: polygon(0 65%, 100% 65%, 100% 88%, 0 88%); transform: translate(1px, -1px); }
-  75%  { clip-path: polygon(0 10%, 100% 10%, 100% 28%, 0 28%); transform: translate(-1px, 1px); }
-  100% { clip-path: polygon(0 55%, 100% 55%, 100% 78%, 0 78%); transform: translate(0, 0); }
+  33%  { clip-path: polygon(0 30%, 100% 30%, 100% 48%, 0 48%); transform: translate(-2px, 0); }
+  66%  { clip-path: polygon(0 65%, 100% 65%, 100% 88%, 0 88%); transform: translate(1px, -1px); }
+  100% { clip-path: polygon(0 10%, 100% 10%, 100% 28%, 0 28%); transform: translate(-1px, 0); }
 }
 
-/* ── Scanline overlay ─────────────────────────── */
-.scanlines::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(255, 0, 0, 0.04) 2px,
-    rgba(255, 0, 0, 0.04) 4px
+/* ── Scroll reveal ─────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Red line slide-in ─────────────────────────── */
+@keyframes lineIn {
+  0%   { transform: scaleX(0); transform-origin: left; }
+  100% { transform: scaleX(1); transform-origin: left; }
+}
+.line-in { animation: lineIn 0.8s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+/* ── Panel hover ───────────────────────────────── */
+.panel-hover { transition: border-color 0.06s ease; }
+.panel-hover:hover { border-color: #ff0000 !important; }
+
+/* ── Video overlay ─────────────────────────────── */
+.video-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(10,10,10,0.3) 0%,
+    rgba(10,10,10,0.1) 40%,
+    rgba(10,10,10,0.7) 80%,
+    rgba(10,10,10,1) 100%
   );
-  z-index: 1;
 }
 
-/* ── Manga panel border flash ──────────────────── */
-.panel-hover {
-  transition: border-color 0.06s ease;
-}
+/* ── HUD counter blink ─────────────────────────── */
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+.blink { animation: blink 1s step-start infinite; }
 
-.panel-hover:hover {
-  border-color: #ff0000 !important;
+/* ── Red border pulse ─────────────────────────── */
+@keyframes borderPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,0,0,0); }
+  50%      { box-shadow: 0 0 20px 2px rgba(255,0,0,0.4); }
 }
+.border-pulse { animation: borderPulse 2.5s ease-in-out infinite; }
 
-/* ── Border-flash to acid ──────────────────────── */
-.acid-hover {
-  transition: border-color 0.06s ease, color 0.06s ease;
-}
-
-.acid-hover:hover {
-  border-color: #ffff00 !important;
-  color: #ffff00 !important;
+/* ── Speed lines (anime) ───────────────────────── */
+.speed-lines {
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    transparent 0deg,
+    transparent 3.5deg,
+    rgba(255,0,0,0.015) 3.5deg,
+    rgba(255,0,0,0.015) 4deg
+  );
 }

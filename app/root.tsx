@@ -7,6 +7,7 @@ import {
   ScrollRestoration,
 } from "react-router";
 import { ShopifyProvider, CartProvider } from "@shopify/hydrogen-react";
+import { useState, useEffect, type ReactNode } from "react";
 import type { Route } from "./+types/root";
 import "./app.css";
 
@@ -23,17 +24,34 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-const STORE_DOMAIN =
-  (typeof process !== "undefined" && process.env?.PUBLIC_STORE_DOMAIN) ||
-  "demo.myshopify.com";
-const STOREFRONT_TOKEN =
-  (typeof process !== "undefined" &&
-    process.env?.PUBLIC_STOREFRONT_API_TOKEN) ||
-  "";
+// Only rendered client-side to avoid SSR issues with ShopifyProvider
+function ShopifyProviders({ children }: { children: ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-export function Layout({ children }: { children: React.ReactNode }) {
+  const storeDomain =
+    import.meta.env.VITE_STORE_DOMAIN ?? "demo.myshopify.com";
+  const storefrontToken =
+    import.meta.env.VITE_STOREFRONT_API_TOKEN ?? "mock-token";
+
+  if (!mounted) return <>{children}</>;
+
   return (
-    <html lang="en" className="bg-brand-black">
+    <ShopifyProvider
+      storeDomain={storeDomain}
+      storefrontToken={storefrontToken}
+      storefrontApiVersion="2025-01"
+      countryIsoCode="US"
+      languageIsoCode="EN"
+    >
+      <CartProvider>{children}</CartProvider>
+    </ShopifyProvider>
+  );
+}
+
+export function Layout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -41,15 +59,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="bg-[#0a0a0a] text-white font-body">
-        <ShopifyProvider
-          storeDomain={STORE_DOMAIN}
-          storefrontToken={STOREFRONT_TOKEN}
-          storefrontApiVersion="2025-01"
-          countryIsoCode="US"
-          languageIsoCode="EN"
-        >
-          <CartProvider>{children}</CartProvider>
-        </ShopifyProvider>
+        <ShopifyProviders>{children}</ShopifyProviders>
         <ScrollRestoration />
         <Scripts />
       </body>

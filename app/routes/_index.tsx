@@ -15,7 +15,7 @@ export function meta(_: Route.MetaArgs) {
   ];
 }
 
-export async function loader(_: Route.LoaderArgs) {
+export async function clientLoader(_: Route.ClientLoaderArgs) {
   return { products: MOCK_PRODUCTS.slice(0, 3) };
 }
 

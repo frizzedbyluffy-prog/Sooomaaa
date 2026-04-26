@@ -13,7 +13,7 @@ export function meta({ params }: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const handle = params.handle ?? "all";
   const collection = {
     ...MOCK_COLLECTION,

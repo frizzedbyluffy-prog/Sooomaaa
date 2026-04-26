@@ -1,4 +1,5 @@
 import { useCart } from "@shopify/hydrogen-react";
+import { useState, useEffect } from "react";
 
 interface CartDrawerProps {
   open: boolean;
@@ -12,7 +13,7 @@ function formatMoney(amount: string, currencyCode: string) {
   }).format(parseFloat(amount));
 }
 
-export function CartDrawer({ open, onClose }: CartDrawerProps) {
+function CartDrawerInner({ open, onClose }: CartDrawerProps) {
   const { lines, cost, checkoutUrl, linesRemove, linesUpdate, totalQuantity } =
     useCart();
   const cartLines = (lines ?? []) as any[];
@@ -168,4 +169,11 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
       </aside>
     </>
   );
+}
+
+export function CartDrawer(props: CartDrawerProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return <CartDrawerInner {...props} />;
 }

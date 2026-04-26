@@ -13,7 +13,7 @@ export function meta({ data }: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const handle = params.handle;
   const found = MOCK_PRODUCTS.find((p) => p.handle === handle);
   if (!found) {
